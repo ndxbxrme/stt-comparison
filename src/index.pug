@@ -1,8 +1,18 @@
 html
   head
-    base(href='/')
-    link(rel='stylesheet', href='app/app.css')
+    link(rel='stylesheet', href='app.css')
   body
     h1 stt-comparison
+    canvas.viz
+    audio(controls='true')
+    .controls
+      input(type='file', onchange='renderer.fileChange()')
+      button(type='button', onclick='renderer.clearTranscript()') Clear
+      select#channel
+        option(value='0') Channel 0
+        option(value='1') Channel 1
+      label(for='all-results') All results
+      input#all-results(type='checkbox')
+    table.transcript
     script.
       window.renderer = require('./renderer');
