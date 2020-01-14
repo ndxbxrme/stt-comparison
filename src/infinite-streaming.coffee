@@ -91,4 +91,18 @@ infiniteStream = (encoding, sampleRateHertz, languageCode, streamingLimit) ->
     callbacks[name] = callbacks[name] or []
     callbacks[name].push fn
   write: write
+  end: ->
+    if recognizeStream
+      recognizeStream.removeListener 'data', speechCallback
+      recognizeStream = null
+    recognizeStream = null
+    restartCounter = 0
+    audioInput = []
+    lastAudioInput = []
+    resultEndTime = 0
+    isFinalEndTime = 0
+    finalRequestEndTime = 0
+    newStream = true
+    bridgingOffset = 0
+    lastTranscriptwasFinal = false
 module.exports = infiniteStream

@@ -5,14 +5,16 @@
 url = require 'url'
 path = require 'path'
 infiniteStreaming = require './infinite-streaming'
+RevAiStream = require './revai-stream'
 stream = null
+revaiStream = null
 
 mainWindow = null
 ready = ->
   autoUpdater.checkForUpdatesAndNotify()
   mainWindow = new BrowserWindow
-    width: 800
-    height: 600
+    width: 1024
+    height: 800
     webPreferences:
       nodeIntegration: true
   mainWindow.on 'closed', ->
@@ -24,13 +26,22 @@ ready = ->
   #mainWindow.openDevTools()
   transcriptCallback = (transcript) ->
     console.log 'transcript', transcript
-    mainWindow.webContents.send 'transcript', transcript
+    mainWindow.webContents.send 'google-transcript', transcript
+  revaiTranscriptCallback = (data) ->
+    mainWindow.webContents.send 'revai-transcript', data
   ipcMain.on 'start-stream', (win, opts) ->
     stream = infiniteStreaming opts.encoding, opts.sampleRate, opts.languageCode, 290000
     stream.startStream()
     stream.on 'transcript', transcriptCallback
+    revaiStream = RevAiStream opts.sampleRate
+    revaiStream.startStream()
+    revaiStream.on 'transcript', revaiTranscriptCallback
   ipcMain.on 'write-stream', (win, channelData) ->
     stream.write channelData if stream
+    revaiStream.write channelData if revaiStream
+  ipcMain.on 'end-stream', (win) ->
+    stream.end()
+    revaiStream.end()
 app.on 'ready', ready
 app.on 'window-all-closed', ->
   process.platform is 'darwin' or app.quit()

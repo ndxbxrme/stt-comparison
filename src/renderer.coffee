@@ -3,7 +3,7 @@
 {Transform} = require 'stream'
 file = document.querySelector 'input[type=file]'
 allResults = []
-ipcRenderer.on 'transcript', (win, results) ->
+ipcRenderer.on 'google-transcript', (win, results) ->
   lastResult = allResults[allResults.length - 1]
   transcript = ''
   if lastResult and not lastResult.isFinal and not results[0].isFinal and not showAllResults.checked
@@ -13,8 +13,26 @@ ipcRenderer.on 'transcript', (win, results) ->
   allResults.push results[0]
   if transcript
     transcriptElm.innerHTML += '<tr class="trans"><td>' + results[0].correctedTime + '</td><td class="text">' + transcript + '<td><td>' + results[0].isFinal + '</td></tr>'
+ipcRenderer.on 'revai-transcript', (win, data) ->
+  console.log 'revai transcript'
+  transcript = ''
+  transcript = data.elements.map (element) ->
+    element.value
+  .join ' '
+  if (transcript.trim() and data.type is 'final') or showAllResults.checked
+    revaiTranscriptElm.innerHTML += '<tr class="trans"><td>' + data.end_ts + '</td><td class="text">' + transcript + '</td><td>' + (data.type is 'final') + '</td></tr>'
 el = document.querySelector 'audio'
+###
+el.addEventListener 'play', ->
+  ipcRenderer.send 'start-stream',
+    encoding: 'LINEAR16'
+    sampleRate: audio.sampleRate
+    languageCode: 'en-GB'
+el.addEventListener 'pause', ->
+  ipcRenderer.send 'end-stream'
+###
 transcriptElm = document.querySelector '.transcript'
+revaiTranscriptElm = document.querySelector '.revai-transcript'
 channelSelect = document.querySelector '#channel'
 showAllResults = document.querySelector '#all-results'
 encoder = require 'wav-encoder'
@@ -46,14 +64,14 @@ viz = require('./viz') analyser
 gain.connect analyser
 gain.connect audio.destination
 #console.clear()
-ipcRenderer.send 'start-stream',
-  encoding: 'LINEAR16'
-  sampleRate: audio.sampleRate
-  languageCode: 'en-GB'
 draw = ->
   requestAnimationFrame draw
   viz.draw() if viz
 draw()
+ipcRenderer.send 'start-stream',
+  encoding: 'LINEAR16'
+  sampleRate: audio.sampleRate
+  languageCode: 'en-GB'
 
 
 module.exports =
@@ -63,3 +81,4 @@ module.exports =
     el.play()
   clearTranscript: ->
     transcriptElm.innerHTML = ''
+    revaiTranscriptElm.innerHTML = ''

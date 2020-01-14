@@ -13,6 +13,12 @@ html
         option(value='1') Channel 1
       label(for='all-results') All results
       input#all-results(type='checkbox')
-    table.transcript
+    .results
+      .google
+        h3 Google
+        table.transcript
+      .revai
+        h3 Rev ai
+        table.revai-transcript
     script.
       window.renderer = require('./renderer');
