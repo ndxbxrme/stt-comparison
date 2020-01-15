@@ -1,6 +1,7 @@
 
 {ipcRenderer} = require 'electron'
 {Transform} = require 'stream'
+
 file = document.querySelector 'input[type=file]'
 allResults = []
 ipcRenderer.on 'google-transcript', (win, results) ->
@@ -21,6 +22,8 @@ ipcRenderer.on 'revai-transcript', (win, data) ->
   .join ' '
   if (transcript.trim() and data.type is 'final') or showAllResults.checked
     revaiTranscriptElm.innerHTML += '<tr class="trans"><td>' + data.end_ts + '</td><td class="text">' + transcript + '</td><td>' + (data.type is 'final') + '</td></tr>'
+ipcRenderer.on 'deepspeech-transcript', (win, data) ->
+  deepSpeechTranscriptElm.innerHTML += '<tr class="trans"><td></td><td class="text">' + data.text + '</td><td></td></tr>'
 el = document.querySelector 'audio'
 ###
 el.addEventListener 'play', ->
@@ -33,11 +36,13 @@ el.addEventListener 'pause', ->
 ###
 transcriptElm = document.querySelector '.transcript'
 revaiTranscriptElm = document.querySelector '.revai-transcript'
+deepSpeechTranscriptElm = document.querySelector '.deepspeech-transcript'
 channelSelect = document.querySelector '#channel'
 showAllResults = document.querySelector '#all-results'
 encoder = require 'wav-encoder'
 
 audio = new AudioContext()
+wavTools = require('./wavtools') audio.sampleRate, 16000
 source = audio.createMediaElementSource el
 dest = audio.createMediaStreamDestination()
 csp = audio.createScriptProcessor 8192, 2, 1
@@ -74,6 +79,7 @@ ipcRenderer.send 'start-stream',
   languageCode: 'en-GB'
 
 
+  
 module.exports =
   fileChange: ->
     console.log file.files[0].path
@@ -82,3 +88,4 @@ module.exports =
   clearTranscript: ->
     transcriptElm.innerHTML = ''
     revaiTranscriptElm.innerHTML = ''
+    deepSpeechTranscriptElm.innerHTML = ''
