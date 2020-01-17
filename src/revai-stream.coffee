@@ -10,7 +10,9 @@ revaiStream = (sampleRate) ->
   stream = null
   startStream = ->
     client = new revai.RevAiStreamingClient token, config
-    client.on 'close', (code, reason) -> console.log "client closed #{code}, #{reason}"
+    client.on 'close', (code, reason) -> 
+      console.log "client closed #{code}, #{reason}"
+      startStream()
     client.on 'httpResponse', (code) -> console.log "http response #{code}"
     client.on 'connectFailed', (error) -> console.log "connection failed, #{error}"
     client.on 'connect', (msg) -> console.log "connected, #{msg}"
@@ -19,7 +21,6 @@ revaiStream = (sampleRate) ->
     stream.on 'data', speechCallback
     stream.on 'end', -> console.log "stream ended"
   speechCallback = (data) ->
-    console.log 'data', data
     emit 'transcript', data
   write = (chunk) ->
     if stream
@@ -29,7 +30,6 @@ revaiStream = (sampleRate) ->
     stream.end()
     stream = null
 
-  console.log 'token', token
 
   startStream: startStream
   on: (name, fn) ->

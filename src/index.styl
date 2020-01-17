@@ -1,12 +1,72 @@
 html, body
   font-family arial, sans-serif
+  height 100%
+  min-height 100%
+  margin 0
+  display flex
+  flex-direction column
+  canvas
+    background black
+    border-radius 1em
   .transcript
     width 100%
+    table
+      border-collapse collapse
+    tbody:nth-of-type(even)
+      background #efecec
+      border-collapse collapse
+    td
+      padding .1rem
+      vertical-align baseline
+    .time
+      font-family monospace
+      text-align right
+      
     .text
       width 100%
-  .controls
+    td
+      padding .1em
+      font-size .9em
+  .wav-details
     display flex
+    .file
+      flex 1
+      display flex
+      flex-direction column
+      padding 1em
+    .controls
+      padding 1em
+      flex 1
+      display flex
+      flex-direction column
+      .file-row
+        display flex
+        align-items center
+      input, button, select, audio
+        margin-bottom 1em
+        margin-right 1em
+      .gain-ranges
+        display flex
+        .input-item
+          display flex
+          align-items baseline
+          padding-right 1em
+          label
+            padding-right .5em
+            font-size .8em
   .results
     display flex
-    .google, .revai
+    flex 1
+    overflow hidden
+    .google, .revai, .aws
       flex 1
+      display flex
+      flex-direction column
+      margin-left .5rem
+      .table-holder
+        flex 1
+        overflow hidden
+        position relative
+        overflow-y scroll
+        height 100%
+        max-height 100%

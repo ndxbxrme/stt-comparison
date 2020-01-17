@@ -39,15 +39,11 @@ infiniteStream = (encoding, sampleRateHertz, languageCode, streamingLimit) ->
     
   speechCallback = (stream) ->
     resultEndTime = +stream.results[0].resultEndTime.seconds * 1000 + Math.round(stream.results[0].resultEndTime.nanos / 1000000)
-    console.log resultEndTime
     correctedTime = resultEndTime - bridgingOffset + streamingLimit * restartCounter
     stdoutText = ''
     if stream.results?[0].alternatives?[0]
       stream.results[0].correctedTime = correctedTime
       stdoutText = correctedTime + ': ' + stream.results[0].alternatives[0].transcript + ' : ' + stream.results[0].isFinal
-      console.log stdoutText
-      #send stdoutText back
-      console.log 'final'
       emit 'transcript', stream.results
       isFinalEndTime = resultEndTime
       lastTranscriptwasFinal = true

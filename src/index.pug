@@ -2,26 +2,47 @@ html
   head
     link(rel='stylesheet', href='app.css')
   body
-    h1 stt-comparison
-    canvas.viz
-    audio(controls='true')
-    .controls
-      input(type='file', onchange='renderer.fileChange()')
-      button(type='button', onclick='renderer.clearTranscript()') Clear
-      select#channel
-        option(value='0') Channel 0
-        option(value='1') Channel 1
-      label(for='all-results') All results
-      input#all-results(type='checkbox')
+    .wav-details
+      .controls
+        .file-row
+          input(type='file', onchange='renderer.fileChange()')
+          audio(controls='true')
+        .reset-buttons
+          button(type='button', onclick='renderer.clearTranscript()') Clear Transcript
+          input(type='button', onclick='renderer.resetTimer()', value='Reset Timer')
+          select#channel
+            option(value='0') Channel 0
+            option(value='1') Channel 1
+          select.sample-rate(onchange='renderer.setSampleRate()')
+            option(value='8000') 8000
+            option(value='16000') 16000
+            option(value='44100') 44100
+            option(value='48000') 48000
+        .gain-ranges
+          .input-item.wav-gain
+            label Wav Gain
+            input(type='range', min='0', max='3.0', value='1.00', step='0.1', onchange='renderer.setWavGain()', list='tickmarks')
+          .input-item.mic-gain
+            label Mic Gain
+            input(type='range', min='0', max='3.0', value='1.00', step='0.1', onchange='renderer.setMicGain()', list='tickmarks')
+          datalist#tickmarks
+            option(value='0', label='0')
+            option(value='1', label='1.00')
+            option(value='3', label='3.00')
+      .file
+        canvas.viz
     .results
       .google
         h3 Google
-        table.transcript
+        .table-holder
+          table.transcript
       .revai
-        h3 Rev ai
-        table.revai-transcript
-      .deepspeech
-        h3 DeepSpeech
-        table.deepspeech-transcript
+        h3(onclick='toggleStream("revai")') Rev ai
+        .table-holder
+          table.transcript
+      .aws
+        h3 AWS
+        .table-holder
+          table.transcript
     script.
       window.renderer = require('./renderer');
