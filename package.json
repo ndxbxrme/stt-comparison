@@ -20,7 +20,7 @@
   "license": "MIT",
   "homepage": "https://github.com/ndxbxrme/stt-comparison",
   "devDependencies": {
-    "electron": "^7.1.8",
+    "electron": "^18.3.7",
     "electron-builder": "^21.2.0",
     "electron-rebuild": "^1.8.8",
     "grunt": "^1.0.4",
